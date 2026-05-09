@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSIS Center - Sistem Informasi Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00FFB2',
+                        secondary: '#0F172A',
+                        accent: '#10B981',
+                        dark: '#0a0f1a',
+                        darker: '#060a12'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --primary: #00FFB2;
+            --secondary: #0F172A;
+            --accent: #10B981;
+            --dark: #0a0f1a;
+            --darker: #060a12;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--darker); color: #e2e8f0; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--darker); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(0, 255, 178, 0.1); }
+        .glass-strong { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(30px); border: 1px solid rgba(0, 255, 178, 0.15); }
+        .neon-glow { box-shadow: 0 0 20px rgba(0, 255, 178, 0.3), 0 0 40px rgba(0, 255, 178, 0.1); }
+        .neon-text { text-shadow: 0 0 10px rgba(0, 255, 178, 0.5), 0 0 20px rgba(0, 255, 178, 0.3); }
+        
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 178, 0.3); } 50% { box-shadow: 0 0 40px rgba(0, 255, 178, 0.6); } }
+        @keyframes slide-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scan-line { 0% { top: 0; } 50% { top: calc(100% - 4px); } 100% { top: 0; } }
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
+        .animate-spin-slow { animation: spin-slow 20s linear infinite; }
+        
+        .stagger-children > * { opacity: 0; animation: slide-up 0.6s ease-out forwards; }
+        .stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+        .stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+        
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: var(--darker); font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0, 255, 178, 0.5); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: transparent; color: var(--primary); font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 12px; border: 1px solid var(--primary); cursor: pointer; transition: all 0.3s ease; }
+        .btn-secondary:hover { background: rgba(0, 255, 178, 0.1); }
+        .input-modern { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 255, 178, 0.15); border-radius: 12px; padding: 0.875rem 1rem; color: #e2e8f0; width: 100%; transition: all 0.3s ease; }
+        .input-modern:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 255, 178, 0.2); }
+        .input-modern::placeholder { color: #64748b; }
+        .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 255, 178, 0.15); border-color: rgba(0, 255, 178, 0.3); }
+        .sidebar { width: 280px; min-height: 100vh; transition: all 0.3s ease; }
+        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content { transform: scale(0.9); transition: all 0.3s ease; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+        .badge-success { background: rgba(0, 255, 178, 0.15); color: #00FFB2; }
+        .badge-warning { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+        .badge-info { background: rgba(59, 130, 246, 0.15); color: #3B82F6; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 0.5rem; min-width: 200px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.2s ease; }
+        .dropdown-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 1rem 1.5rem; border-radius: 12px; animation: slide-up 0.3s ease-out; }
+        .toast-success { background: rgba(0, 255, 178, 0.15); border: 1px solid rgba(0, 255, 178, 0.3); color: #00FFB2; }
+        .toast-error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #EF4444; }
+        
+        #qr-reader { width: 100%; border-radius: 16px; overflow: hidden; }
+        #qr-reader video { border-radius: 16px; }
+        #qr-reader__dashboard { display: none !important; }
+        .qr-scanner-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; }
+        .qr-scanner-corners { position: absolute; width: 30px; height: 30px; border: 4px solid var(--primary); }
+        .qr-scanner-corners.top-left { top: -3px; left: -3px; border-right: none; border-bottom: none; border-radius: 16px 0 0 0; }
+        .qr-scanner-corners.top-right { top: -3px; right: -3px; border-left: none; border-bottom: none; border-radius: 0 16px 0 0; }
+        .qr-scanner-corners.bottom-left { bottom: -3px; left: -3px; border-right: none; border-top: none; border-radius: 0 0 0 16px; }
+        .qr-scanner-corners.bottom-right { bottom: -3px; right: -3px; border-left: none; border-top: none; border-radius: 0 0 16px 0; }
+        .scan-line { position: absolute; left: 10%; right: 10%; height: 3px; background: linear-gradient(90deg, transparent, var(--primary), transparent); box-shadow: 0 0 10px var(--primary); animation: scan-line 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-darker">
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <!-- Background Effects -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-30 animate-spin-slow">
+            <svg viewBox="0 0 200 200" class="w-full h-full"><circle cx="100" cy="100" r="80" fill="none" stroke="rgba(0,255,178,0.3)" stroke-width="0.5" stroke-dasharray="5,5"/></svg>
+        </div>
+    </div>
+
+    <!-- LANDING PAGE -->
+    <div id="landingPage" class="page active">
+        <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16 md:h-20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                            <i data-lucide="users" class="w-5 h-5 text-darker"></i>
+                        </div>
+                        <span class="font-poppins font-bold text-xl text-white">OSIS Center</span>
+                    </div>
+                    <div class="hidden md:flex items-center gap-8">
+                        <a href="#beranda" class="text-gray-300 hover:text-primary transition-colors">Beranda</a>
+                        <a href="#statistik" class="text-gray-300 hover:text-primary transition-colors">Statistik</a>
+                        <a href="#divisi" class="text-gray-300 hover:text-primary transition-colors">Divisi</a>
+                        <a href="#event" class="text-gray-300 hover:text-primary transition-colors">Event</a>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="showPage('loginPage')" class="btn-secondary text-sm hidden sm:block">Masuk</button>
+                        <button onclick="showPage('loginPage')" class="btn-primary text-sm">Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero -->
+        <section id="beranda" class="relative min-h-screen flex items-center pt-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="stagger-children">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            <span class="text-sm text-gray-300">Sistem Digital Organisasi Siswa</span>
+                        </div>
+                        <h1 class="font-poppins text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                            Sistem Informasi Digital
+                            <span class="text-primary neon-text block">Organisasi Siswa Modern</span>
+                        </h1>
+                        <p class="text-gray-400 text-lg mb-8 max-w-xl">Platform manajemen OSIS terintegrasi dengan fitur absensi QR Code, manajemen event, dan analitik realtime.</p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="showPage('loginPage')" class="btn-primary flex items-center gap-2"><i data-lucide="log-in" class="w-5 h-5"></i> Masuk Dashboard</button>
+                            <button onclick="document.getElementById('event').scrollIntoView({behavior:'smooth'})" class="btn-secondary flex items-center gap-2"><i data-lucide="calendar" class="w-5 h-5"></i> Lihat Event</button>
+                        </div>
+                    </div>
+                    <div class="relative hidden lg:block">
+                        <div class="relative animate-float">
+                            <div class="glass rounded-3xl p-8 neon-glow">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h3 class="font-semibold text-white">Dashboard Overview</h3>
+                                    <span class="badge badge-success">Live</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="glass rounded-xl p-4"><div class="text-3xl font-bold text-primary mb-1">156</div><div class="text-sm text-gray-400">Total Anggota</div></div>
+                                    <div class="glass rounded-xl p-4"><div class="text-3xl font-bold text-accent mb-1">89%</div><div class="text-sm text-gray-400">Kehadiran</div></div>
+                                    <div class="glass rounded-xl p-4"><div class="text-3xl font-bold text-blue-400 mb-1">12</div><div class="text-sm text-gray-400">Event Aktif</div></div>
+                                    <div class="glass rounded-xl p-4"><div class="text-3xl font-bold text-amber-400 mb-1">8</div><div class="text-sm text-gray-400">Divisi</div></div>
+                                </div>
+                                <div class="mt-6 h-32 flex items-end gap-2">
+                                    <div class="flex-1 bg-primary/20 rounded-t" style="height:60%"></div>
+                                    <div class="flex-1 bg-primary/30 rounded-t" style="height:75%"></div>
+                                    <div class="flex-1 bg-primary/40 rounded-t" style="height:45%"></div>
+                                    <div class="flex-1 bg-primary/50 rounded-t" style="height:90%"></div>
+                                    <div class="flex-1 bg-primary/60 rounded-t" style="height:65%"></div>
+                                    <div class="flex-1 bg-primary/70 rounded-t" style="height:80%"></div>
+                                    <div class="flex-1 bg-primary rounded-t" style="height:95%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section id="statistik" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-poppins text-3xl sm:text-4xl font-bold text-white mb-4">Statistik Organisasi</h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Data real-time performa dan aktivitas OSIS</p>
+                </div>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 stagger-children">
+                    <div class="glass rounded-2xl p-6 card-hover text-center">
+                        <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4"><i data-lucide="users" class="w-7 h-7 text-primary"></i></div>
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1" id="statMembers">156</div>
+                        <div class="text-gray-400 text-sm">Total Anggota</div>
+                    </div>
+                    <div class="glass rounded-2xl p-6 card-hover text-center">
+                        <div class="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4"><i data-lucide="calendar-check" class="w-7 h-7 text-accent"></i></div>
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1">89%</div>
+                        <div class="text-gray-400 text-sm">Tingkat Kehadiran</div>
+                    </div>
+                    <div class="glass rounded-2xl p-6 card-hover text-center">
+                        <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4"><i data-lucide="rocket" class="w-7 h-7 text-blue-400"></i></div>
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1">24</div>
+                        <div class="text-gray-400 text-sm">Event Selesai</div>
+                    </div>
+                    <div class="glass rounded-2xl p-6 card-hover text-center">
+                        <div class="w-14 h-14 rounded-xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4"><i data-lucide="award" class="w-7 h-7 text-amber-400"></i></div>
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1">12</div>
+                        <div class="text-gray-400 text-sm">Penghargaan</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Events Preview -->
+        <section id="event" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-poppins text-3xl sm:text-4xl font-bold text-white mb-4">Event Mendatang</h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Jangan lewatkan berbagai kegiatan seru dari OSIS</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="landingEvents"></div>
+            </div>
+        </section>
+
+        <!-- Divisions -->
+        <section id="divisi" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-poppins text-3xl sm:text-4xl font-bold text-white mb-4">Struktur Divisi OSIS</h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">8 divisi yang bekerja sama untuk kemajuan organisasi</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6" id="divisionsGrid"></div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="border-t border-white/10 py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center"><i data-lucide="users" class="w-5 h-5 text-darker"></i></div>
+                        <span class="font-poppins font-bold text-xl text-white">OSIS Center</span>
+                    </div>
+                    <p class="text-gray-500 text-sm">2025 OSIS Center. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="page">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="w-full max-w-md">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4 neon-glow">
+                        <i data-lucide="users" class="w-8 h-8 text-darker"></i>
+                    </div>
+                    <h1 class="font-poppins text-2xl font-bold text-white mb-2">Masuk ke OSIS Center</h1>
+                    <p class="text-gray-400">Kelola organisasi dengan lebih mudah</p>
+                </div>
+                <div class="glass rounded-2xl p-6 md:p-8">
+                    <form id="loginForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">Email</label>
+                            <input type="email" id="loginEmail" class="input-modern" placeholder="email@example.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">Password</label>
+                            <input type="password" id="loginPassword" class="input-modern" placeholder="Masukkan password" required>
+                        </div>
+                        <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2"><i data-lucide="log-in" class="w-5 h-5"></i> Masuk</button>
+                    </form>
+                    <div class="relative my-6">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                        <div class="relative flex justify-center text-sm"><span class="px-4 bg-darker text-gray-500">atau</span></div>
+                    </div>
+                    <button onclick="googleLogin()" class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-colors">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        <span class="text-gray-300">Masuk dengan Google</span>
+                    </button>
+                </div>
+                <button onclick="showPage('landingPage')" class="mt-6 flex items-center justify-center gap-2 text-gray-400 hover:text-primary mx-auto"><i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Beranda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboardPage" class="page">
+        <div class="flex min-h-screen">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar fixed left-0 top-0 h-screen glass-strong z-40 hidden lg:block">
+                <div class="p-6 border-b border-white/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center"><i data-lucide="users" class="w-5 h-5 text-darker"></i></div>
+                        <span class="font-poppins font-bold text-lg text-white">OSIS Center</span>
+                    </div>
+                </div>
+                <nav class="p-4 space-y-1" id="sidebarNav"></nav>
+                <div class="absolute bottom-4 left-4 right-4">
+                    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i><span>Keluar</span></button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 lg:ml-[280px]">
+                <!-- Top Bar -->
+                <header class="sticky top-0 z-30 glass-strong border-b border-white/10">
+                    <div class="flex items-center justify-between px-4 md:px-6 h-16">
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-white/5"><i data-lucide="menu" class="w-6 h-6"></i></button>
+                            <h1 id="pageTitle" class="font-poppins font-semibold text-lg text-white">Dashboard</h1>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button class="relative p-2 rounded-lg hover:bg-white/5"><i data-lucide="bell" class="w-5 h-5 text-gray-400"></i><span class="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span></button>
+                            <div class="relative">
+                                <button onclick="toggleProfileDropdown()" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/5">
+                                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center"><span id="userInitial" class="text-sm font-bold text-darker">A</span></div>
+  </button>
+  <div id="profileDropdown" class="dropdown-menu glass rounded-xl p-2">
+                                    <div class="px-3 py-2 border-b border-white/10 mb-2">
+                                        <div id="dropdownUserName" class="font-medium text-white">Admin</div>
+                                        <div id="dropdownUserEmail" class="text-sm text-gray-400">admin@osis.com</div>
+                                    </div>
+                                    <button onclick="logout()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-500/10 text-left text-red-400"><i data-lucide="log-out" class="w-4 h-4"></i> Keluar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Content -->
+                <div class="p-4 md:p-6 pb-24 lg:pb-6">
+                    <!-- Overview Tab -->
+                    <div id="tab-overview" class="dashboard-tab">
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8 stagger-children">
+                            <div class="glass rounded-2xl p-4 md:p-6 card-hover">
+                                <div class="flex items-center justify-between mb-4"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center"><i data-lucide="users" class="w-5 h-5 md:w-6 md:h-6 text-primary"></i></div><span class="badge badge-success text-xs">+12%</span></div>
+                                <div class="text-2xl md:text-3xl font-bold text-white mb-1" id="totalMembers">156</div>
+                                <div class="text-gray-400 text-sm">Total Anggota</div>
+                            </div>
+                            <div class="glass rounded-2xl p-4 md:p-6 card-hover">
+                                <div class="flex items-center justify-between mb-4"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-accent/10 flex items-center justify-center"><i data-lucide="clipboard-check" class="w-5 h-5 md:w-6 md:h-6 text-accent"></i></div><span class="badge badge-success text-xs">89%</span></div>
+                                <div class="text-2xl md:text-3xl font-bold text-white mb-1" id="todayAttendance">139</div>
+                                <div class="text-gray-400 text-sm">Hadir Hari Ini</div>
+                            </div>
+                            <div class="glass rounded-2xl p-4 md:p-6 card-hover">
+                                <div class="flex items-center justify-between mb-4"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-500/10 flex items-center justify-center"><i data-lucide="calendar" class="w-5 h-5 md:w-6 md:h-6 text-blue-400"></i></div><span class="badge badge-info text-xs">Aktif</span></div>
+                                <div class="text-2xl md:text-3xl font-bold text-white mb-1">12</div>
+                                <div class="text-gray-400 text-sm">Event Aktif</div>
+                            </div>
+                            <div class="glass rounded-2xl p-4 md:p-6 card-hover">
+                                <div class="flex items-center justify-between mb-4"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-amber-500/10 flex items-center justify-center"><i data-lucide="megaphone" class="w-5 h-5 md:w-6 md:h-6 text-amber-400"></i></div><span class="badge badge-warning text-xs">Baru</span></div>
+                                <div class="text-2xl md:text-3xl font-bold text-white mb-1">5</div>
+                                <div class="text-gray-400 text-sm">Pengumuman</div>
+                            </div>
+                        </div>
+                        <div class="grid lg:grid-cols-2 gap-6">
+                            <div class="glass rounded-2xl p-4 md:p-6">
+                                <h3 class="font-semibold text-white mb-4">Aktivitas Terbaru</h3>
+                                <div class="space-y-4" id="recentActivity"></div>
+                            </div>
+                            <div class="glass rounded-2xl p-4 md:p-6">
+                                <div class="flex items-center justify-between mb-4"><h3 class="font-semibold text-white">Anggota Teraktif</h3><button onclick="showDashboardTab('leaderboard')" class="text-sm text-primary hover:underline">Lihat Semua</button></div>
+                                <div class="space-y-3" id="topMembers"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Tab -->
+                  <div id="tab-attendance" class="dashboard-tab hidden">
+                        <div class="glass rounded-2xl p-4 md:p-6 mb-6">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                                <h3 class="font-semibold text-white text-lg">Sistem Absensi</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="showAttendanceModal('qr')" class="btn-primary text-sm flex items-center gap-2"><i data-lucide="qr-code" class="w-4 h-4"></i> Scan QR</button>
+                                    <button onclick="showAttendanceModal('generate')" class="btn-secondary text-sm flex items-center gap-2"><i data-lucide="qr-code" class="w-4 h-4"></i> Generate QR</button>
+                                    <button onclick="showAttendanceModal('token')" class="btn-secondary text-sm flex items-center gap-2"><i data-lucide="key" class="w-4 h-4"></i> Token</button>
+                                    <button onclick="showAttendanceModal('manual')" class="btn-secondary text-sm flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4"></i> Manual</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                                <button class="attendance-type-btn active glass rounded-xl p-4 text-center card-hover" data-type="rapat_rutin"><i data-lucide="users" class="w-6 h-6 mx-auto mb-2 text-primary"></i><span class="text-sm text-gray-300">Rapat Rutin</span></button>
+                                <button class="attendance-type-btn glass rounded-xl p-4 text-center card-hover" data-type="piket"><i data-lucide="broom" class="w-6 h-6 mx-auto mb-2 text-gray-400"></i><span class="text-sm text-gray-400">Piket</span></button>
+                                <button class="attendance-type-btn glass rounded-xl p-4 text-center card-hover" data-type="event"><i data-lucide="party-popper" class="w-6 h-6 mx-auto mb-2 text-gray-400"></i><span class="text-sm text-gray-400">Event</span></button>
+                            </div>
+                        </div>
+                        <div class="glass rounded-2xl p-4 md:p-6">
+                            <h3 class="font-semibold text-white mb-4">Riwayat Absensi</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead><tr class="border-b border-white/10"><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm">Nama</th><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm hidden md:table-cell">Kelas</th><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm">Tipe</th><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm hidden sm:table-cell">Waktu</th><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm">Status</th></tr></thead>
+                                    <tbody id="attendanceTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Events Tab -->
+                    <div id="tab-events" class="dashboard-tab hidden">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                            <h3 class="font-semibold text-white text-lg">Manajemen Event</h3>
+                            <button onclick="showEventModal()" class="btn-primary text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Tambah Event</button>
+                        </div>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="eventsGrid"></div>
+                    </div>
+
+                    <!-- Announcements Tab -->
+                    <div id="tab-announcements" class="dashboard-tab hidden">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                            <h3 class="font-semibold text-white text-lg">Manajemen Pengumuman</h3>
+                            <button onclick="showAnnouncementModal()" class="btn-primary text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Buat Pengumuman</button>
+                        </div>
+                        <div class="space-y-4" id="announcementsList"></div>
+                    </div>
+
+                    <!-- Members Tab -->
+                    <div id="tab-members" class="dashboard-tab hidden">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                            <h3 class="font-semibold text-white text-lg">Manajemen Anggota</h3>
+                            <button onclick="showMemberModal()" class="btn-primary text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Tambah Anggota</button>
+                        </div>
+                        <div class="glass rounded-2xl p-4 md:p-6">
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead><tr class="border-b border-white/10"><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm">Anggota</th><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm hidden md:table-cell">Kelas</th><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm hidden lg:table-cell">Divisi</th><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm hidden md:table-cell">Jabatan</th><th class="text-left py-3 px-4 text-gray-400 font-medium text-sm">Aksi</th></tr></thead>
+                                    <tbody id="membersTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Tab -->
+                    <div id="tab-leaderboard" class="dashboard-tab hidden">
+                        <div class="glass rounded-2xl p-4 md:p-6">
+                            <h3 class="font-semibold text-white text-lg mb-6">Papan Peringkat Anggota</h3>
+                            <div class="grid grid-cols-3 gap-4 mb-8">
+                                <div class="text-center order-1"><div class="w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center mb-3 ring-4 ring-gray-400/30"><span class="text-2xl font-bold text-white">2</span></div><div class="font-medium text-white text-sm" id="secondName">-</div><div class="text-gray-400 text-xs" id="secondPoints">0 poin</div></div>
+                                <div class="text-center"><div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mb-3 ring-4 ring-amber-400/30"><i data-lucide="crown" class="w-8 h-8 text-white"></i></div><div class="font-medium text-white text-sm" id="firstName">-</div><div class="text-amber-400 text-xs" id="firstPoints">0 poin</div></div>
+                                <div class="text-center order-3"><div class="w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center mb-3 ring-4 ring-amber-600/30"><span class="text-2xl font-bold text-white">3</span></div><div class="font-medium text-white text-sm" id="thirdName">-</div><div class="text-gray-400 text-xs" id="thirdPoints">0 poin</div></div>
+                            </div>
+                            <div class="space-y-2" id="leaderboardList"></div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Tab -->
+                    <div id="tab-gallery" class="dashboard-tab hidden">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                            <h3 class="font-semibold text-white text-lg">Galeri Kegiatan</h3>
+                            <button onclick="showToast('Fitur upload akan segera tersedia', 'success')" class="btn-primary text-sm flex items-center gap-2"><i data-lucide="upload" class="w-4 h-4"></i> Upload Media</button>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="galleryGrid"></div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Mobile Bottom Nav -->
+            <nav class="mobile-nav glass-strong border-t border-white/10 lg:hidden">
+                <div class="flex items-center justify-around py-2">
+                    <button onclick="showDashboardTab('overview')" class="flex flex-col items-center gap-1 p-2 text-primary"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-xs">Dashboard</span></button>
+                    <button onclick="showDashboardTab('attendance')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><i data-lucide="clipboard-check" class="w-5 h-5"></i><span class="text-xs">Absensi</span></button>
+                    <button onclick="showDashboardTab('events')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><i data-lucide="calendar" class="w-5 h-5"></i><span class="text-xs">Event</span></button>
+                    <button onclick="showDashboardTab('members')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><i data-lucide="users" class="w-5 h-5"></i><span class="text-xs">Anggota</span></button>
+                    <button onclick="showDashboardTab('leaderboard')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><i data-lucide="trophy" class="w-5 h-5"></i><span class="text-xs">Ranking</span></button>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Attendance Modal -->
+    <div id="attendanceModal" class="modal-overlay">
+        <div class="modal-content glass rounded-2xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="attendanceModalTitle" class="font-semibold text-white text-lg">Absensi</h3>
+                <button onclick="closeAttendanceModal()" class="p-2 rounded-lg hover:bg-white/5"><i data-lucide="x" class="w-5 h-5 text-gray-400"></i></button>
+            </div>
+            <div id="attendanceModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal-overlay">
+        <div class="modal-content glass rounded-2xl p-6 w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-semibold text-white text-lg">Tambah Event</h3>
+                <button onclick="closeModal('eventModal')" class="p-2 rounded-lg hover:bg-white/5"><i data-lucide="x" class="w-5 h-5 text-gray-400"></i></button>
+            </div>
+            <form id="eventForm" class="space-y-4">
+                <input type="text" name="name" class="input-modern" placeholder="Nama Event" required>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="date" name="date" class="input-modern" required>
+                    <input type="time" name="time" class="input-modern" required>
+                </div>
+                <input type="text" name="location" class="input-modern" placeholder="Lokasi" required>
+                <input type="number" name="quota" class="input-modern" placeholder="Kuota Peserta" required>
+                <textarea name="description" rows="3" class="input-modern" placeholder="Deskripsi"></textarea>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('eventModal')" class="btn-secondary flex-1">Batal</button>
+                    <button type="submit" class="btn-primary flex-1">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Announcement Modal -->
+    <div id="announcementModal" class="modal-overlay">
+        <div class="modal-content glass rounded-2xl p-6 w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-semibold text-white text-lg">Buat Pengumuman</h3>
+                <button onclick="closeModal('announcementModal')" class="p-2 rounded-lg hover:bg-white/5"><i data-lucide="x" class="w-5 h-5 text-gray-400"></i></button>
+            </div>
+            <form id="announcementForm" class="space-y-4">
+                <input type="text" name="title" class="input-modern" placeholder="Judul" required>
+                <textarea name="content" rows="4" class="input-modern" placeholder="Isi Pengumuman" required></textarea>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('announcementModal')" class="btn-secondary flex-1">Batal</button>
+                    <button type="submit" class="btn-primary flex-1">Publikasikan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Member Modal -->
+    <div id="memberModal" class="modal-overlay">
+        <div class="modal-content glass rounded-2xl p-6 w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-semibold text-white text-lg">Tambah Anggota</h3>
+                <button onclick="closeModal('memberModal')" class="p-2 rounded-lg hover:bg-white/5"><i data-lucide="x" class="w-5 h-5 text-gray-400"></i></button>
+            </div>
+            <form id="memberForm" class="space-y-4">
+                <input type="text" name="name" class="input-modern" placeholder="Nama Lengkap" required>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" name="class" class="input-modern" placeholder="Kelas (XII IPA 1)" required>
+                    <input type="email" name="email" class="input-modern" placeholder="Email" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <select name="division" class="input-modern" required><option value="">Pilih Divisi</option><option>Inti</option><option>Sosial</option><option>Akademik</option><option>Olahraga</option><option>Kesenian</option></select>
+                    <select name="role" class="input-modern" required><option>Anggota</option><option>Ketua Divisi</option><option>Wakil Ketua</option><option>Sekretaris</option><option>Bendahara</option><option>Ketua OSIS</option></select>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('memberModal')" class="btn-secondary flex-1">Batal</button>
+                    <button type="submit" class="btn-primary flex-1">Tambah</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-content glass rounded-2xl p-8 w-full max-w-sm mx-4 text-center">
+            <div class="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6 animate-pulse-glow"><i data-lucide="check-circle" class="w-10 h-10 text-primary"></i></div>
+            <h3 class="font-poppins font-bold text-xl text-white mb-2">Berhasil!</h3>
+            <p id="successMessage" class="text-gray-400 mb-4">Aksi berhasil dilakukan</p>
+            <p id="successQuote" class="text-primary italic text-sm mb-6">"Pemimpin hebat dimulai dari tanggung jawab kecil."</p>
+            <button onclick="closeModal('successModal')" class="btn-primary w-full">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black/50 z-50 hidden lg:hidden" onclick="closeMobileSidebar()"></div>
+    <div id="mobileSidebar" class="fixed left-0 top-0 h-screen w-72 glass-strong z-50 transform -translate-x-full transition-transform lg:hidden">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <span class="font-poppins font-bold text-lg text-white">Menu</span>
+            <button onclick="closeMobileSidebar()" class="p-2 rounded-lg hover:bg-white/5"><i data-lucide="x" class="w-5 h-5 text-gray-400"></i></button>
+        </div>
+        <nav class="p-4 space-y-1" id="mobileSidebarNav"></nav>
+    </div>
+
+    <script>
+        // ==================== DATA ====================
+        const quotes = ["Pemimpin hebat dimulai dari tanggung jawab kecil.", "Terima kasih sudah berkontribusi hari ini.", "Konsistensi adalah kunci kesuksesan.", "Bersama kita bisa lebih baik.", "Disiplin adalah fondasi prestasi."];
+        const divisions = [{id:'inti',name:'Inti',icon:'star',color:'primary',members:5},{id:'sosial',name:'Sosial',icon:'heart',color:'accent',members:20},{id:'akademik',name:'Akademik',icon:'book-open',color:'blue-400',members:18},{id:'olahraga',name:'Olahraga',icon:'trophy',color:'amber-400',members:22},{id:'kesenian',name:'Kesenian',icon:'music',color:'purple-400',members:25},{id:'humas',name:'Humas',icon:'megaphone',color:'red-400',members:23}];
+        const defaultMembers = [{id:1,name:'Ahmad Rizky',class:'XII IPA 1',email:'ahmad@osis.com',division:'Inti',role:'Ketua OSIS',attendance:95,points:450},{id:2,name:'Siti Nurhaliza',class:'XII IPA 2',email:'siti@osis.com',division:'Inti',role:'Wakil Ketua',attendance:92,points:420},{id:3,name:'Budi Santoso',class:'XII IPS 1',email:'budi@osis.com',division:'Inti',role:'Sekretaris',attendance:88,points:380},{id:4,name:'Dewi Lestari',class:'XII IPA 3',email:'dewi@osis.com',division:'Inti',role:'Bendahara',attendance:90,points:400},{id:5,name:'Eko Prasetyo',class:'XI IPA 1',email:'eko@osis.com',division:'Sosial',role:'Ketua Divisi',attendance:85,points:350},{id:6,name:'Fitri Handayani',class:'XI IPA 2',email:'fitri@osis.com',division:'Akademik',role:'Ketua Divisi',attendance:87,points:360}];
+        const defaultEvents = [{id:1,name:'Rapat Koordinasi Bulanan',date:'2025-01-20',time:'14:00',location:'Aula Sekolah',quota:50,registered:42,status:'upcoming',description:'Rapat koordinasi rutin bulanan'},{id:2,name:'Bakti Sosial Desa',date:'2025-01-25',time:'07:00',location:'Desa Sukamaju',quota:30,registered:30,status:'full',description:'Kegiatan bakti sosial'}];
+        const defaultAnnouncements = [{id:1,title:'Pendaftaran Event Bakti Sosial Dibuka',content:'Pendaftaran untuk kegiatan bakti sosial sudah dibuka.',date:'2025-01-18',pinned:true,author:'Ketua OSIS'},{id:2,title:'Rapat Koordinasi Mingguan',content:'Rapat koordinasi mingguan setiap hari Jumat pukul 15.00.',date:'2025-01-17',pinned:false,author:'Sekretaris'}];
+        const defaultAttendance = [{id:1,name:'Ahmad Rizky',class:'XII IPA 1',division:'Inti',type:'rapat_rutin',time:'07:15',date:'2025-01-18',status:'hadir'},{id:2,name:'Siti Nurhaliza',class:'XII IPA 2',division:'Inti',type:'rapat_rutin',time:'07:20',date:'2025-01-18',status:'hadir'}];
+        const adminUser = {email:'koordinatordaerahwilayahxi@gmail.com',password:'OSSTAR25SMAN27',name:'Super Admin',role:'Super Admin'};
+        
+        // ==================== STATE ====================
+        let currentUser = null;
+        let currentAttendanceType = 'rapat_rutin';
+        let html5QrCode = null;
+
+      function getData(k) { const d = localStorage.getItem('osis'+k); return d ? JSON.parse(d) : null; }
+        function setData(k, d) { localStorage.setItem('osis'+k, JSON.stringify(d)); }
+        
+        function initData() {
+            if (!getData('Members')) setData('Members', defaultMembers);
+            if (!getData('Events')) setData('Events', defaultEvents);
+            if (!getData('Announcements')) setData('Announcements', defaultAnnouncements);
+            if (!getData('Attendance')) setData('Attendance', defaultAttendance);
+            if (!getData('Tokens')) setData('Tokens', []);
+        }
+        
+        // ==================== NAVIGATION ====================
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (id === 'dashboardPage') { lucide.createIcons(); updateDashboard(); }
+            else if (id === 'landingPage') { lucide.createIcons(); initLanding(); }
+        }
+        
+        function showDashboardTab(id) {
+            document.querySelectorAll('.dashboard-tab').forEach(t => t.classList.add('hidden'));
+            document.getElementById('tab-'+id).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => { n.classList.remove('bg-primary/10','text-primary'); n.classList.add('text-gray-400'); });
+            const nav = document.querySelector(`.nav-item[data-tab="${id}"]`);
+            if (nav) { nav.classList.add('bg-primary/10','text-primary'); nav.classList.remove('text-gray-400'); }
+            const titles = {overview:'Dashboard',attendance:'Absensi',events:'Event',announcements:'Pengumuman',members:'Anggota',leaderboard:'Leaderboard',gallery:'Galeri'};
+            document.getElementById('pageTitle').textContent = titles[id] || 'Dashboard';
+            lucide.createIcons();
+            loadTab(id);
+        }
+        
+        function loadTab(id) {
+            if (id === 'attendance') renderAttendance();
+            else if (id === 'events') renderEvents();
+            else if (id === 'announcements') renderAnnouncements();
+            else if (id === 'members') renderMembers();
+            else if (id === 'leaderboard') renderLeaderboard();
+            else if (id === 'gallery') renderGallery();
+        }
+        
+        // ==================== AUTH ====================
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            if (email === adminUser.email && pass === adminUser.password) {
+                currentUser = {...adminUser, isAdmin: true};
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showToast('Login berhasil! Selamat datang, ' + currentUser.name, 'success');
+                updateUserUI();
+                showPage('dashboardPage');
+            } else {
+              const members = getData('Members') || [];
+                const member = members.find(m => m.email === email);
+                if (member) {
+                    currentUser = {...member, isAdmin: false};
+                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showToast('Login berhasil!', 'success');
+                    updateUserUI();
+                    showPage('dashboardPage');
+                } else {
+                    showToast('Email atau password salah', 'error');
+                }
+            }
+        });
+        
+        function googleLogin() {
+            currentUser = {name:'Demo User',email:'demo@gmail.com',role:'Anggota',isAdmin:false};
+            sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showToast('Login dengan Google berhasil!', 'success');
+            updateUserUI();
+            showPage('dashboardPage');
+        }
+        
+        function logout() {
+            currentUser = null;
+            sessionStorage.removeItem('currentUser');
+            showToast('Berhasil logout', 'success');
+            showPage('landingPage');
+        }
+        
+        function updateUserUI() {
+            if (currentUser) {
+                document.getElementById('userInitial').textContent = currentUser.name.charAt(0).toUpperCase();
+                document.getElementById('dropdownUserName').textContent = currentUser.name;
+                document.getElementById('dropdownUserEmail').textContent = currentUser.email;
+            }
+        }
+        
+        function toggleProfileDropdown() { document.getElementById('profileDropdown').classList.toggle('active'); }
+        document.addEventListener('click', function(e) { if (!e.target.closest('.relative')) document.getElementById('profileDropdown')?.classList.remove('active'); });
+        
+        // ==================== DASHBOARD ====================
+        function updateDashboard() {
+            const members = getData('Members') || [];
+            const attendance = getData('Attendance') || [];
+            document.getElementById('totalMembers').textContent = members.length;
+            document.getElementById('statMembers').textContent = members.length;
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('todayAttendance').textContent = attendance.filter(a => a.date === today).length;
+            renderRecentActivity();
+            renderTopMembers();
+        }
+        
+        function renderRecentActivity() {
+          const acts = [{icon:'user-plus',text:'Ahmad Rizky bergabung',time:'5 menit lalu',color:'primary'},{icon:'clipboard-check',text:'Absensi rapat selesai',time:'15 menit lalu',color:'accent'},{icon:'calendar-plus',text:'Event baru ditambahkan',time:'1 jam lalu',color:'blue-400'}];
+            document.getElementById('recentActivity').innerHTML = acts.map(a => `<div class="flex items-start gap-3"><div class="w-8 h-8 rounded-lg bg-${a.color}/10 flex items-center justify-center"><i data-lucide="${a.icon}" class="w-4 h-4 text-${a.color}"></i></div><div class="flex-1"><p class="text-sm text-white">${a.text}</p><p class="text-xs text-gray-500">${a.time}</p></div></div>`).join('');
+        }
+        
+        function renderTopMembers() {
+            const members = (getData('Members') || []).sort((a,b) => b.points - a.points).slice(0,5);
+            document.getElementById('topMembers').innerHTML = members.map((m,i) => `<div class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5"><div class="w-8 h-8 rounded-lg ${i===0?'bg-amber-500/20':'bg-white/5'} flex items-center justify-center"><span class="text-sm font-bold ${i===0?'text-amber-400':'text-gray-400'}">${i+1}</span></div><div class="flex-1"><p class="text-sm font-medium text-white">${m.name}</p><p class="text-xs text-gray-500">${m.division}</p></div><div class="text-right"><p class="text-sm font-bold text-primary">${m.points}</p><p class="text-xs text-gray-500">poin</p></div></div>`).join('');
+        }
+        
+        // ==================== QR SCANNER (REAL) ====================
+        function generateQRToken() {
+            const r = Math.random().toString(36).substring(2,8).toUpperCase();
+            return `OSIS-${currentAttendanceType.substring(0,3).toUpperCase()}-${r}-${Date.now().toString(36).toUpperCase()}`;
+        }
+        
+        function saveToken(token) {
+            const tokens = getData('Tokens') || [];
+            tokens.push({token, type:currentAttendanceType, createdAt:new Date().toISOString(), expiresAt:new Date(Date.now()+30*60000).toISOString(), used:false});
+            setData('Tokens', tokens);
+        }
+        
+        function validateToken(token) {
+            const tokens = getData('Tokens') || [];
+            const t = tokens.find(x => x.token === token);
+            if (!t) return {valid:false, message:'Token tidak ditemukan'};
+            if (t.used) return {valid:false, message:'Token sudah digunakan'};
+            if (new Date() > new Date(t.expiresAt)) return {valid:false, message:'Token sudah kedaluwarsa'};
+            return {valid:true, type:t.type, tokenData:t};
+        }
+        
+        function markTokenUsed(token) {
+            let tokens = getData('Tokens') || [];
+            const i = tokens.findIndex(x => x.token === token);
+            if (i !== -1) { tokens[i].used = true; setData('Tokens', tokens); }
+        }
+        
+        function showAttendanceModal(type) {
+            const modal = document.getElementById('attendanceModal');
+            const title = document.getElementById('attendanceModalTitle');
+            const content = document.getElementById('attendanceModalContent');
+            
+            if (type === 'qr') {
+                title.textContent = 'Scan QR Code Absensi';
+                content.innerHTML = `<div class="text-center"><div class="qr-scanner-container mb-4"><div id="qr-reader"></div><div class="qr-scanner-corners top-left"></div><div class="qr-scanner-corners top-right"></div><div class="qr-scanner-corners bottom-left"></div><div class="qr-scanner-corners bottom-right"></div><div class="scan-line"></div></div><p class="text-gray-400 text-sm mb-2">Arahkan kamera ke QR Code absensi</p><div id="scanStatus" class="text-primary text-sm font-medium mb-4">Menunggu QR Code...</div><div class="flex gap-3"><button onclick="startQRScanner()" id="startScanBtn" class="btn-primary flex-1 flex items-center justify-center gap-2"><i data-lucide="camera" class="w-4 h-4"></i> Mulai Scan</button><button onclick="stopQRScanner()" id="stopScanBtn" class="btn-secondary flex-1 flex items-center justify-center gap-2 hidden"><i data-lucide="square" class="w-4 h-4"></i> Berhenti</button></div></div>`;
+                modal.classList.add('active');
+                lucide.createIcons();
+            } else if (type === 'generate') {
+                title.textContent = 'Generate QR Code Absensi';
+                const token = generateQRToken();
+                saveToken(token);
+                content.innerHTML = `<div class="text-center"><div class="bg-white p-4 rounded-2xl inline-block mb-4"><canvas id="qrCanvas" width="192" height="192"></canvas></div><p class="text-gray-400 text-sm mb-2">QR Code berlaku selama 30 menit</p><div class="glass rounded-xl p-3 mb-4"><p class="text-xs text-gray-500 mb-1">Token:</p><p class="text-primary font-mono text-sm break-all">${token}</p></div><button onclick="copyToken('${token}')" class="btn-secondary w-full flex items-center justify-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Salin Token</button></div>`;
+                modal.classList.add('active');
+                drawQRCode(token);
+              lucide.createIcons();
+            } else if (type === 'token') {
+                title.textContent = 'Absensi dengan Token';
+                content.innerHTML = `<div class="text-center"><p class="text-gray-400 text-sm mb-4">Masukkan token absensi</p><input type="text" id="tokenInput" class="input-modern text-center text-xl tracking-widest font-mono mb-4" placeholder="Masukkan token..."><button onclick="submitTokenAttendance()" class="btn-primary w-full flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-5 h-5"></i> Verifikasi</button></div>`;
+                modal.classList.add('active');
+                lucide.createIcons();
+            } else {
+                title.textContent = 'Absensi Manual';
+                const members = getData('Members') || [];
+                content.innerHTML = `<div class="space-y-4"><select id="manualMember" class="input-modern"><option value="">Pilih anggota...</option>${members.map(m=>`<option value="${m.id}">${m.name} - ${m.class}</option>`).join('')}</select><button onclick="submitManualAttendance()" class="btn-primary w-full">Catat Kehadiran</button></div>`;
+                modal.classList.add('active');
+                lucide.createIcons();
+            }
+        }
+        
+        async function startQRScanner() {
+            const startBtn = document.getElementById('startScanBtn');
+            const stopBtn = document.getElementById('stopScanBtn');
+            const status = document.getElementById('scanStatus');
+            try {
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Memulai...';
+                lucide.createIcons();
+                html5QrCode = new Html5Qrcode("qr-reader");
+                await html5QrCode.start({facingMode:"environment"}, {fps:10,qrbox:{width:250,height:250}}, onScanSuccess, ()=>{});
+                startBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+                status.textContent = 'Kamera aktif - Arahkan ke QR Code';
+            } catch (err) {
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i data-lucide="camera" class="w-4 h-4"></i> Coba Lagi';
+                status.textContent = 'Gagal mengakses kamera';
+                status.classList.add('text-red-400');
+                showToast('Gagal mengakses kamera. Berikan izin kamera.', 'error');
+                lucide.createIcons();
+            }
+        }
+        
+        async function stopQRScanner() {
+            if (html5QrCode) { try { await html5QrCode.stop(); html5QrCode.clear(); } catch(e){} html5QrCode = null; }
+            document.getElementById('startScanBtn')?.classList.remove('hidden');
+            document.getElementById('stopScanBtn')?.classList.add('hidden');
+            const status = document.getElementById('scanStatus');
+            if (status) status.textContent = 'Scanner dihentikan';
+            lucide.createIcons();
+        }
+        
+        function onScanSuccess(decodedText) {
+            const status = document.getElementById('scanStatus');
+            const validation = validateToken(decodedText);
+            if (validation.valid && currentUser) {
+              status.textContent = 'QR Code valid!';
+                const attendance = getData('Attendance') || [];
+                const now = new Date();
+                attendance.unshift({id:Date.now(),name:currentUser.name,class:currentUser.class||'-',division:currentUser.division||'-',type:validation.type,time:now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),date:now.toISOString().split('T')[0],status:now.getHours()<7?'hadir':'telat',token:decodedText});
+                setData('Attendance', attendance);
+                markTokenUsed(decodedText);
+                stopQRScanner();
+                closeAttendanceModal();
+                showSuccessModal('Absensi berhasil dicatat!');
+                renderAttendance();
+                updateDashboard();
+            } else {
+                status.textContent = validation.message || 'Token tidak valid';
+                status.classList.remove('text-primary');
+                status.classList.add('text-amber-400');
+            }
+        }
+        
+        function drawQRCode(text) {
+            const canvas = document.getElementById('qrCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const size = 192;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0,0,size,size);
+            // Simple QR visualization
+            const modules = 21;
+            const moduleSize = size/modules;
+            ctx.fillStyle = '#0a0f1a';
+            let hash = 0;
+            for (let i=0; i<text.length; i++) hash = ((hash<<5)-hash)+text.charCodeAt(i);
+            for (let r=0; r<modules; r++) {
+                for (let c=0; c<modules; c++) {
+                    if ((r<7&&c<7)||(r<7&&c>=modules-7)||(r>=modules-7&&c<7)) {
+                        if (r===0||r===6||c===0||c===6||(r>=2&&r<=4&&c>=2&&c<=4)) ctx.fillRect(c*moduleSize,r*moduleSize,moduleSize,moduleSize);
+                    } else {
+                        if (Math.sin(hash+r*modules+c)*10000%1>0.5) ctx.fillRect(c*moduleSize,r*moduleSize,moduleSize,moduleSize);
+                    }
+                }
+            }
+        }
+        
+        function copyToken(token) { navigator.clipboard.writeText(token).then(()=>showToast('Token berhasil disalin!','success')).catch(()=>showToast('Gagal menyalin','error')); }
+        
+        function submitTokenAttendance() {
+            const token = document.getElementById('tokenInput').value.trim();
+            if (!token) { showToast('Masukkan token','error'); return; }
+            const validation = validateToken(token);
+            if (validation.valid && currentUser) {
+                const attendance = getData('Attendance') || [];
+                const now = new Date();
+                attendance.unshift({id:Date.now(),name:currentUser.name,class:currentUser.class||'-',division:currentUser.division||'-',type:validation.type,time:now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),date:now.toISOString().split('T')[0],status:now.getHours()<7?'hadir':'telat',token});
+                setData('Attendance', attendance);
+              markTokenUsed(token);
+                closeModal('attendanceModal');
+                showSuccessModal('Absensi berhasil dicatat!');
+                renderAttendance();
+            } else {
+                showToast(validation.message, 'error');
+            }
+        }
+        
+        function submitManualAttendance() {
+            const id = document.getElementById('manualMember').value;
+            if (!id) { showToast('Pilih anggota','error'); return; }
+            const member = (getData('Members')||[]).find(m=>m.id==id);
+            if (member) {
+                const attendance = getData('Attendance') || [];
+                const now = new Date();
+                attendance.unshift({id:Date.now(),name:member.name,class:member.class,division:member.division,type:currentAttendanceType,time:now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),date:now.toISOString().split('T')[0],status:now.getHours()<7?'hadir':'telat'});
+                setData('Attendance', attendance);
+                closeModal('attendanceModal');
+                showSuccessModal();
+                renderAttendance();
+            }
+        }
+        
+        function closeAttendanceModal() { stopQRScanner(); closeModal('attendanceModal'); }
+        
+        // ==================== ATTENDANCE TYPE ====================
+        document.querySelectorAll('.attendance-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.attendance-type-btn').forEach(b => { b.classList.remove('active'); b.querySelector('i').classList.replace('text-primary','text-gray-400'); });
+                this.classList.add('active');
+                this.querySelector('i').classList.replace('text-gray-400','text-primary');
+                currentAttendanceType = this.dataset.type;
+            });
+        });
+        
+        function renderAttendance() {
+            const data = (getData('Attendance')||[]).slice(0,10);
+            const labels = {rapat_rutin:'Rapat Rutin',piket:'Piket',event:'Event'};
+            document.getElementById('attendanceTable').innerHTML = data.map(a => `<tr class="border-b border-white/5 hover:bg-white/5"><td class="py-3 px-4"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="text-sm font-bold text-primary">${a.name.charAt(0)}</span></div><span class="text-white text-sm">${a.name}</span></div></td><td class="py-3 px-4 text-gray-400 text-sm hidden md:table-cell">${a.class}</td><td class="py-3 px-4"><span class="badge badge-info text-xs">${labels[a.type]||a.type}</span></td><td class="py-3 px-4 text-gray-400 text-sm hidden sm:table-cell">${a.time}</td><td class="py-3 px-4"><span class="badge ${a.status==='hadir'?'badge-success':'badge-warning'} text-xs">${a.status}</span></td></tr>`).join('');
+        }
+        
+        // ==================== EVENTS ====================
+        function renderEvents() {
+            const events = getData('Events') || [];
+            document.getElementById('eventsGrid').innerHTML = events.map(e => `<div class="glass rounded-2xl overflow-hidden card-hover"><div class="h-32 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center"><i data-lucide="calendar" class="w-12 h-12 text-primary/50"></i></div><div class="p-4"><div class="flex items-start justify-between mb-2"><h4 class="font-semibold text-white">${e.name}</h4><span class="badge ${e.status==='full'?'badge-danger':'badge-success'} text-xs">${e.status==='full'?'Penuh':'Tersedia'}</span></div><p class="text-gray-400 text-sm mb-3">${e.description||''}</p><div class="flex items-center justify-between"><div class="text-sm"><span class="text-primary font-semibold">${e.registered}</span><span class="text-gray-500">/${e.quota}</span></div><button onclick="deleteEvent(${e.id})" class="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div></div>`).join('');
+            lucide.createIcons();
+        }
+        
+        function showEventModal() { document.getElementById('eventModal').classList.add('active'); }
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fd = new FormData(this);
+          const events = getData('Events') || [];
+            events.unshift({id:Date.now(),name:fd.get('name'),date:fd.get('date'),time:fd.get('time'),location:fd.get('location'),quota:parseInt(fd.get('quota')),registered:0,status:'upcoming',description:fd.get('description')});
+            setData('Events', events);
+            closeModal('eventModal');
+            showToast('Event berhasil ditambahkan', 'success');
+            renderEvents();
+            this.reset();
+        });
+        function deleteEvent(id) { if(confirm('Hapus event ini?')){ let e=(getData('Events')||[]).filter(x=>x.id!==id); setData('Events',e); showToast('Event dihapus','success'); renderEvents(); }}
+        
+        // ==================== ANNOUNCEMENTS ====================
+        function renderAnnouncements() {
+            const ann = getData('Announcements') || [];
+            document.getElementById('announcementsList').innerHTML = ann.map(a => `<div class="glass rounded-2xl p-4 md:p-6 card-hover"><div class="flex items-start justify-between gap-4"><div class="flex-1"><div class="flex items-center gap-2 mb-2">${a.pinned?'<span class="badge badge-warning text-xs">Pinned</span>':''}<span class="text-gray-500 text-sm">${a.date}</span></div><h4 class="font-semibold text-white mb-2">${a.title}</h4><p class="text-gray-400 text-sm">${a.content}</p></div><button onclick="deleteAnnouncement(${a.id})" class="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`).join('');
+            lucide.createIcons();
+        }
+        function showAnnouncementModal() { document.getElementById('announcementModal').classList.add('active'); }
+        document.getElementById('announcementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fd = new FormData(this);
+            const ann = getData('Announcements') || [];
+            ann.unshift({id:Date.now(),title:fd.get('title'),content:fd.get('content'),date:new Date().toISOString().split('T')[0],pinned:false,author:currentUser?.name||'Admin'});
+            setData('Announcements', ann);
+            closeModal('announcementModal');
+            showToast('Pengumuman dipublikasikan', 'success');
+            renderAnnouncements();
+            this.reset();
+        });
+        function deleteAnnouncement(id) { if(confirm('Hapus pengumuman?')){ let a=(getData('Announcements')||[]).filter(x=>x.id!==id); setData('Announcements',a); showToast('Pengumuman dihapus','success'); renderAnnouncements(); }}
+        
+        // ==================== MEMBERS ====================
+        function renderMembers() {
+            const members = getData('Members') || [];
+            document.getElementById('membersTable').innerHTML = members.map(m => `<tr class="border-b border-white/5 hover:bg-white/5"><td class="py-3 px-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center"><span class="font-bold text-primary">${m.name.charAt(0)}</span></div><div><p class="text-white text-sm font-medium">${m.name}</p><p class="text-gray-500 text-xs">${m.email}</p></div></div></td><td class="py-3 px-4 text-gray-400 text-sm hidden md:table-cell">${m.class}</td><td class="py-3 px-4 text-gray-400 text-sm hidden lg:table-cell">${m.division}</td><td class="py-3 px-4 hidden md:table-cell"><span class="badge badge-info text-xs">${m.role}</span></td><td class="py-3 px-4"><button onclick="deleteMember(${m.id})" class="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`).join('');
+            lucide.createIcons();
+        }
+        function showMemberModal() { document.getElementById('memberModal').classList.add('active'); }
+        document.getElementById('memberForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fd = new FormData(this);
+            const members = getData('Members') || [];
+            members.unshift({id:Date.now(),name:fd.get('name'),class:fd.get('class'),email:fd.get('email'),division:fd.get('division'),role:fd.get('role'),attendance:0,points:0});
+            setData('Members', members);
+            closeModal('memberModal');
+            showToast('Anggota ditambahkan', 'success');
+            renderMembers();
+            updateDashboard();
+            this.reset();
+        });
+        function deleteMember(id) { if(confirm('Hapus anggota?')){ let m=(getData('Members')||[]).filter(x=>x.id!==id); setData('Members',m); showToast('Anggota dihapus','success'); renderMembers(); updateDashboard(); }}
+        
+        // ==================== LEADERBOARD ====================
+        function renderLeaderboard() {
+          const members = (getData('Members')||[]).sort((a,b) => b.points - a.points);
+            if (members[0]) { document.getElementById('firstName').textContent = members[0].name; document.getElementById('firstPoints').textContent = members[0].points+' poin'; }
+            if (members[1]) { document.getElementById('secondName').textContent = members[1].name; document.getElementById('secondPoints').textContent = members[1].points+' poin'; }
+            if (members[2]) { document.getElementById('thirdName').textContent = members[2].name; document.getElementById('thirdPoints').textContent = members[2].points+' poin'; }
+            document.getElementById('leaderboardList').innerHTML = members.slice(3).map((m,i) => `<div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/5"><div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><span class="text-sm font-bold text-gray-400">${i+4}</span></div><div class="flex-1"><p class="text-sm font-medium text-white">${m.name}</p><p class="text-xs text-gray-500">${m.division}</p></div><div class="text-right"><p class="text-sm font-bold text-primary">${m.points}</p><p class="text-xs text-gray-500">poin</p></div></div>`).join('');
+        }
+        
+        // ==================== GALLERY ====================
+        function renderGallery() {
+            const colors = ['primary','accent','blue-400','amber-400'];
+            const items = [{id:1,title:'Upacara',date:'2025-01-15'},{id:2,title:'Rapat',date:'2025-01-14'},{id:3,title:'Bakti Sosial',date:'2025-01-10'},{id:4,title:'Lomba',date:'2024-08-17'}];
+            document.getElementById('galleryGrid').innerHTML = items.map((item,i) => `<div class="glass rounded-xl overflow-hidden card-hover"><div class="aspect-square bg-gradient-to-br from-${colors[i%4]}/20 to-${colors[(i+1)%4]}/20 flex items-center justify-center"><i data-lucide="image" class="w-12 h-12 text-${colors[i%4]}/50"></i></div><div class="p-3"><p class="text-sm font-medium text-white">${item.title}</p><p class="text-xs text-gray-500">${item.date}</p></div></div>`).join('');
+            lucide.createIcons();
+        }
+        
+        // ==================== LANDING ====================
+        function initLanding() {
+            const events = getData('Events') || [];
+            document.getElementById('landingEvents').innerHTML = events.slice(0,3).map(e => `<div class="glass rounded-2xl overflow-hidden card-hover"><div class="h-40 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center"><i data-lucide="calendar" class="w-16 h-16 text-primary/30"></i></div><div class="p-5"><h4 class="font-semibold text-white mb-2">${e.name}</h4><div class="space-y-1 text-sm text-gray-400"><div class="flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i>${new Date(e.date).toLocaleDateString('id-ID')}</div><div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i>${e.location}</div></div><button class="btn-primary w-full mt-4 text-sm">Daftar</button></div></div>`).join('');
+            
+            document.getElementById('divisionsGrid').innerHTML = divisions.map(d => `<div class="glass rounded-xl p-4 md:p-6 text-center card-hover"><div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-${d.color}/10 flex items-center justify-center mx-auto mb-3"><i data-lucide="${d.icon}" class="w-6 h-6 md:w-7 md:h-7 text-${d.color}"></i></div><h4 class="font-semibold text-white text-sm md:text-base mb-1">${d.name}</h4><p class="text-gray-500 text-xs md:text-sm">${d.members} anggota</p></div>`).join('');
+            lucide.createIcons();
+        }
+        
+        // ==================== SIDEBAR ====================
+        function initSidebar() {
+            const navItems = [{id:'overview',icon:'layout-dashboard',label:'Dashboard'},{id:'attendance',icon:'clipboard-check',label:'Absensi'},{id:'events',icon:'calendar',label:'Event'},{id:'announcements',icon:'megaphone',label:'Pengumuman'},{id:'members',icon:'users',label:'Anggota'},{id:'leaderboard',icon:'trophy',label:'Leaderboard'},{id:'gallery',icon:'image',label:'Galeri'}];
+            const html = navItems.map(n => `<button onclick="showDashboardTab('${n.id}')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-white/5 transition-colors text-gray-400" data-tab="${n.id}"><i data-lucide="${n.icon}" class="w-5 h-5"></i><span>${n.label}</span></button>`).join('');
+            document.getElementById('sidebarNav').innerHTML = html;
+            document.getElementById('mobileSidebarNav').innerHTML = html;
+        }
+        
+        function toggleMobileSidebar() { document.getElementById('mobileSidebar').classList.toggle('-translate-x-full'); document.getElementById('mobileSidebarOverlay').classList.toggle('hidden'); }
+        function closeMobileSidebar() { document.getElementById('mobileSidebar').classList.add('-translate-x-full'); document.getElementById('mobileSidebarOverlay').classList.add('hidden'); }
+        
+        // ==================== UTILS ====================
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function showSuccessModal(msg='Aksi berhasil dilakukan') {
+            document.getElementById('successMessage').textContent = msg;
+            document.getElementById('successQuote').textContent = `"${quotes[Math.floor(Math.random()*quotes.length)]}"`;
+            document.getElementById('successModal').classList.add('active');
+            lucide.createIcons();
+        }
+        function showToast(msg, type='success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type} glass`;
+            toast.innerHTML = `<div class="flex items-center gap-3"><i data-lucide="${type==='success'?'check-circle':'alert-circle'}" class="w-5 h-5"></i><span>${msg}</span></div>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => toast.remove(), 3000);
+      }
+
+      // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            initData();
+            const savedUser = sessionStorage.getItem('currentUser');
+            if (savedUser) { currentUser = JSON.parse(savedUser); updateUserUI(); }
+            lucide.createIcons();
+            initLanding();
+            initSidebar();
+            showDashboardTab('overview');
+        });
+        
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active')); });
+    </script>
+</body>
+</html>
